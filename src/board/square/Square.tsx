@@ -35,7 +35,7 @@ class Square extends React.Component<IProps, {}> {
             // 引数は Board クラスで設定されてくる。
             <button
                 className='square'
-                onClick={(i: any) => this.onClickFromBoard.bind(this, i)()}>
+                onClick={this.onClickFromBoard.bind(this)}>
                 {this.props.value}
             </button>
         );

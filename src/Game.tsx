@@ -63,7 +63,7 @@ class Game extends React.Component<IProp, IState> {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
             // squares: squares, // squares  1 つしかないときは、ES5 の書き方として怒られる
-            history: history.concat([{ // 上書きするときはキーがいらないらしい。
+            history: history.concat([{ // concat して現在の状況を新たな配列を既存の配列に追加。
                 squares,
             }]),
             xIsNext: !this.state.xIsNext,
