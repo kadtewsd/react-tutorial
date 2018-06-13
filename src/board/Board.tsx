@@ -1,23 +1,23 @@
 // import は a->z で並べないといけない Lint がある。alphabetized
 import * as React from 'react';
-import IBoardState from './IBoardState';
+import IBoardProp from './IBoardProp';
 import ChangeProperty from './propchange/ChangeProperty';
-import Square from './Square';
+import Square from './square/Square';
 
 // コメントを描く時は、// の後にスペースを入れろ、と。
 // An empty interface is equivalent to `{}`.空のインターフェースは {} でかけ、、と。
 // interface IProp {}
-class Board extends React.Component<{}, IBoardState> {
+class Board extends React.Component<IBoardProp, IBoardProp> {
 
-    constructor(props: {}) {
+    // to store history in Game of top layer, delete this constructor
+    constructor(props: IBoardProp) {
         super(props);
-        this.state = {
-            squares: Array<string | null>(9).fill(null), // null 許容
-            xIsNext: true,
-        };
+        // this.state = {
+        //     squares: Array<string | null>(9).fill(null), // null 許容
+        //     xIsNext: true,
+        // };
     }
     public render() {
-        const status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
         return (
             <div>
                 <div className='status'>{status}</div>
@@ -40,24 +40,19 @@ class Board extends React.Component<{}, IBoardState> {
         );
     }
 
+    // tslint は効かないので、コメントで特定の部位のみ lint を外す。
+    // tslint:disable:no-console
     /**
-     * 関数を返す関数出ないと、このクラスにある引数の値を動的に Square に渡せない。
+     * Square で実行される関数を返す関数。
+     * 引数なしの関数を () => this.handlePropOnclick(i) とするとエラーになる。
+     * そこで引数を活かして遅延実行したい時は、関数を返す関数を定義してしのぐ。
      */
-    private handleClick = (i: number) => () => {
-        // tslint は効かないので、コメントで特定の部位のみ lint を外す。
-        // tslint:disable:no-console
+    public handlePropOnClick = (i: number) => () => {
         const c = new ChangeProperty();
-        console.log(c.changeByMutating());
-        console.log(c.changeByNotMutating());
-        console.log(`executed on Board: ${this}引数は${i}`, this);
-        // deep copy
-        const squares: Array<string | null> = this.state.squares.slice();
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-            // squares: squares, // squares  1 つしかないときは、ES5 の書き方として怒られる
-              squares, // 上書きするときはキーがいらないらしい。
-              xIsNext: !this.state.xIsNext,
-        });
+        console.log('board argument', i);
+        console.log('board', c.changeByMutating());
+        console.log('board', c.changeByNotMutating());
+        this.props.onClick(i);
     }
     /**
      * private メソッドは、public のメソッドのあとにくる
@@ -65,8 +60,8 @@ class Board extends React.Component<{}, IBoardState> {
      */
     private renderSquare(i: number) {
         return (
-            <Square value={this.state.squares[i]}
-            onClick={this.handleClick(i)}/>
+            <Square value={this.props.squares[i]}
+                onClick={this.handlePropOnClick(i)} />
         );
     }
 }
