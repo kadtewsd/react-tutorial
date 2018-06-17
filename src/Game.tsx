@@ -12,8 +12,9 @@ interface IState {
     // history: Array<IBoardState>
     // array is forbbiden for non-simple type
     // history: {squares: any}[];
-    history: Array<{ squares: Array<string | null>}>;
+    history: Array<{ squares: Array<string | null> }>;
     xIsNext: boolean;
+    stepNumber: number;
 }
 class Game extends React.Component<IProp, IState> {
     constructor(props: IProp) {
@@ -22,14 +23,33 @@ class Game extends React.Component<IProp, IState> {
             history: [{
                 squares: Array(9).fill(null),
             }],
+            stepNumber: 0,
+            // 先行は X, 後攻は O
             xIsNext: true,
         };
     }
     public render() {
+        console.log('game render is starting...');
         const history = this.state.history;
-        const current = history[history.length - 1];
+        // const current = history[history.length - 1];
+        // 最新の履歴をとってくるのではなくて、jumpTo でセットされた、あるいは、コンストラクタにてセットされた stepNumber の履歴をとってくる。
+        const current = history[this.state.stepNumber];
         const j = new Judge();
         const winner = j.calculateWinner(current.squares);
+
+        // move は 0 から始まる配列の添字
+        const moves = history.map((step, move) => {
+            const description = move ?
+                `Go to move # ${move}` :
+                'Go to game Start';
+            return (
+                // key は reacto のコンポーネントを一意にするために必要。
+                // key は global で一意である必要なし。sibling (li) で一意になれば良い。
+                <li key={move}>
+                    <button onClick={this.jumpTo(move)}>{description}</button>
+                </li>
+            );
+        });
         const status = winner ? `Winner ${winner}` :
             `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
         return (
@@ -37,12 +57,12 @@ class Game extends React.Component<IProp, IState> {
                 <div className='game-board'>
                     <Board
                         squares={current.squares}
-                        onClick={(i) => this.handleClick(i)} // この形は OK らしい。
+                        onClick={(i) => this.handleBoardCellClick(i)} // この形は OK らしい。
                     />
                 </div>
                 <div className='game-info'>
                     <div>{status}</div>
-                    <ol>{/*todo*/}</ol>
+                    <ol>{moves}</ol>
                 </div>
             </div>
         );
@@ -53,10 +73,11 @@ class Game extends React.Component<IProp, IState> {
      * 引数をもらって関数を返す。
      * 返した関数が React に遅延実行される。
      */
-    public handleClick = (i: number) => {
+    private handleBoardCellClick = (i: number) => {
         console.log('game argument', i);
-        const history = this.state.history;
-        const current = history[history.length - 1];
+        // すべての配列を全てリスト slice で新規に配列として作成する。
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        const current = history[history.length - 1]; // 最新の履歴をとってくる。
         const squares = current.squares.slice();
         console.log(`squares: ${squares}`);
         // squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -66,8 +87,19 @@ class Game extends React.Component<IProp, IState> {
             history: history.concat([{ // concat して現在の状況を新たな配列を既存の配列に追加。
                 squares,
             }]),
+            stepNumber: history.length, // 溜め込んだ履歴の数だけ step する。
             xIsNext: !this.state.xIsNext,
         });
+    }
+
+    private jumpTo = (step: number) => () => {
+        console.log(`go back to ${step}`);
+        this.setState({
+            stepNumber: step,
+            // 先行は X なので、xIsNext は偶数の時になる。
+            xIsNext: (step % 2) === 0,
+        });
+        console.log('jump to state is', this.state);
     }
 }
 export default Game;
