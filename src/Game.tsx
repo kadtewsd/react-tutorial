@@ -46,6 +46,7 @@ class Game extends React.Component<IProp, IState> {
 
         // move は 0 から始まる配列の添字
         const moves = history.map((step, move) => {
+            const style = this.state.stepNumber === move ? 'current-selected'  : 'other-game';
             const description = move ?
                 `Go to move # ${move} [row ${step.row} cell ${step.cell}]` :
                 'Go to game Start';
@@ -53,7 +54,9 @@ class Game extends React.Component<IProp, IState> {
                 // key は reacto のコンポーネントを一意にするために必要。
                 // key は global で一意である必要なし。sibling (li) で一意になれば良い。
                 <li key={move}>
-                    <button onClick={this.jumpTo(move)}>{description}</button>
+                    <button onClick={this.jumpTo(move)}>
+                    <span className={style}>{description}</span>
+                    </button>
                 </li>
             );
         });
@@ -80,16 +83,15 @@ class Game extends React.Component<IProp, IState> {
      * 引数をもらって関数を返す。
      * 返した関数が React に遅延実行される。
      */
-    private handleBoardCellClick = (i: number) => {
-        console.log('game argument', i);
+    private handleBoardCellClick = (cellIndex: number) => {
         // すべての配列を全てリスト slice で新規に配列として作成する。
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1]; // 最新の履歴をとってくる。
         const squares = current.squares.slice();
         console.log(`squares: ${squares}`);
         // squares[i] = this.state.xIsNext ? 'X' : 'O';
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        const cell = new CellInformation(i);
+        squares[cellIndex] = this.state.xIsNext ? 'X' : 'O';
+        const cell = new CellInformation(cellIndex);
         this.setState({
             // squares: squares, // squares  1 つしかないときは、ES5 の書き方として怒られる
             history: history.concat([{ // concat して現在の状況を新たな配列を既存の配列に追加。

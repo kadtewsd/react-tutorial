@@ -6,3 +6,11 @@
 .game-info {
   margin-left: 20px;
 }
+
+.current-selected {
+  font-weight: bold;
+}
+
+.other-game {
+  font-weight: normal;
+}
