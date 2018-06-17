@@ -59,9 +59,16 @@ class Board extends React.Component<IBoardProp, IBoardProp> {
      * @param i
      */
     private renderSquare(i: number) {
+        const cellHitted = () => {
+            return !!this.props.winningPattern && this.props.winningPattern.filter((cell) => cell === i).length > 0;
+        };
+
+        const winningStyleName = cellHitted() ? 'game-set' : 'game-goes-on';
         return (
             <Square value={this.props.squares[i]}
-                onClick={this.handlePropOnClick(i)} />
+                onClick={this.handlePropOnClick(i)}
+                winningStyleName={winningStyleName}
+            />
         );
     }
 }

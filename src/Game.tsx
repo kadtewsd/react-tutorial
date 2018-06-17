@@ -20,6 +20,7 @@ interface IState {
     }>;
     xIsNext: boolean;
     stepNumber: number;
+    winner: Array<string | null> | null;
 }
 class Game extends React.Component<IProp, IState> {
     constructor(props: IProp) {
@@ -33,6 +34,7 @@ class Game extends React.Component<IProp, IState> {
             stepNumber: 0,
             // 先行は X, 後攻は O
             xIsNext: true,
+            winner: null,
         };
     }
     public render() {
@@ -42,11 +44,9 @@ class Game extends React.Component<IProp, IState> {
         // 最新の履歴をとってくるのではなくて、jumpTo でセットされた、あるいは、コンストラクタにてセットされた stepNumber の履歴をとってくる。
         const current = history[this.state.stepNumber];
         const j = new Judge();
-        const winner = j.calculateWinner(current.squares);
-
         // move は 0 から始まる配列の添字
         const moves = history.map((step, move) => {
-            const style = this.state.stepNumber === move ? 'current-selected'  : 'other-game';
+            const style = this.state.stepNumber === move ? 'current-selected' : 'other-game';
             const description = move ?
                 `Go to move # ${move} [row ${step.row} cell ${step.cell}]` :
                 'Go to game Start';
@@ -55,19 +55,22 @@ class Game extends React.Component<IProp, IState> {
                 // key は global で一意である必要なし。sibling (li) で一意になれば良い。
                 <li key={move}>
                     <button onClick={this.jumpTo(move)}>
-                    <span className={style}>{description}</span>
+                        <span className={style}>{description}</span>
                     </button>
                 </li>
             );
         });
-        const status = winner ? `Winner ${winner}` :
+        const winnerInformation = j.calculateWinner(current.squares);
+        const status = winnerInformation ? `Winner ${winnerInformation.winner}` :
             `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
+        const winningPattern = winnerInformation ? winnerInformation.winning : null;
         return (
             <div className='game'>
                 <div className='game-board'>
                     <Board
                         squares={current.squares}
                         onClick={(i) => this.handleBoardCellClick(i)} // この形は OK らしい。
+                        winningPattern={winningPattern}
                     />
                 </div>
                 <div className='game-info'>

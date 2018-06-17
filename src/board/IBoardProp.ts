@@ -4,5 +4,7 @@ interface IBoardState {
     squares: any;
     // xIsNext: boolean;
     onClick: (i: number) => void;
+    // 勝利したマス目のパターン
+    winningPattern: number[] | null;
 }
 export default IBoardState;

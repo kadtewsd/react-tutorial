@@ -12,3 +12,10 @@
   text-align: center;
   width: 34px;
 }
+
+.game-set {
+    background-color: aquamarine;
+}
+.game-goes-on {
+    background-color: white;
+}

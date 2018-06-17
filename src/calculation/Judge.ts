@@ -1,12 +1,16 @@
 class Judge {
 
-  public calculateWinner(squares: Array<string | null>) {
+  public calculateWinner(squares: Array<string | null>): {winning: number[], winner: string | null} | null {
 
     for (const winning of this.winningCondition()) {
       if (squares[winning[0]] &&
         squares[winning[0]] === squares[winning[1]] &&
         squares[winning[0]] === squares[winning[2]]) {
-        return squares[winning[0]];
+        // X か O が返る
+        return {
+          winning,
+          winner: squares[winning[0]],
+        };
       }
     }
     return null;

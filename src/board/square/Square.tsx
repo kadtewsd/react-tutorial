@@ -4,6 +4,7 @@ import './Square.css';
 interface IProps {
     value: string | null;
     onClick: (i: number) => void;
+    winningStyleName: string;
 }
 // React.Component<P, S> を extends したクラスを作成する
 // https://qiita.com/kimamula/items/11873444e6a4df19df37
@@ -22,6 +23,7 @@ class Square extends React.Component<IProps, {}> {
     }
     // ReactDOM.render だと引数は最低 2 つだが、クラスの中にいれば引数は return でコンポーネントを返せば良い。
     public render() {
+        const styleName = `square ${this.props.winningStyleName}`;
         return (
             // 描画のたびに関数が生成され流ので、Lamda はパフォーマンス的に禁止されている。
             // Lambdas are forbidden in JSX attributes due
@@ -34,7 +36,7 @@ class Square extends React.Component<IProps, {}> {
             // bind は必須の模様。
             // 引数は Board クラスで設定されてくる。
             <button
-                className='square'
+                className={styleName}
                 onClick={this.onClickFromBoard.bind(this)}>
                 {this.props.value}
             </button>
