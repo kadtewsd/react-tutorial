@@ -62,9 +62,12 @@ class Game extends React.Component<IProp, IState> {
         });
         const winnerInformation = j.calculateWinner(current.squares);
         const status = winnerInformation ? `Winner ${winnerInformation.winner}` :
-            `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
+            j.calculateDraw(current.squares) ? 'This game is draw!! Nice Fight' :
+                `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
         const winningPattern = winnerInformation ? winnerInformation.winning : null;
-        const onBordCellClickFn = winningPattern ? () => { alert('Game is end...'); } : this.handleBoardCellClick;
+        const onBordCellClickFn = winningPattern || j.calculateDraw(current.squares) ?
+            () => { alert('Game is end...'); } :
+            this.handleBoardCellClick;
         return (
             <div className='game'>
                 <div className='game-board'>

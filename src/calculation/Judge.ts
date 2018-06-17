@@ -1,6 +1,6 @@
 class Judge {
 
-  public calculateWinner(squares: Array<string | null>): {winning: number[], winner: string | null} | null {
+  public calculateWinner(squares: Array<string | null>): { winning: number[], winner: string | null } | null {
 
     for (const winning of this.winningCondition()) {
       if (squares[winning[0]] &&
@@ -15,6 +15,24 @@ class Judge {
     }
     return null;
   }
+
+  public calculateDraw(squares: Array<string | null>): boolean {
+    if (this.calculateWinner(squares)) {
+      return false;
+    }
+    const cellOver = 9;
+    const recursive = (current: number): boolean => {
+      if (cellOver === current) {
+        return true;
+      }
+      if (squares[current] === null) {
+        return false;
+      } else {
+        return recursive(++current);
+      }
+    };
+    return recursive(0);
+  }
   /**
    * 勝利条件を生成します。
    * 縦、横、斜めでかつ条件を生成します。
@@ -22,12 +40,12 @@ class Judge {
   private winningCondition(): number[][] {
     const horizontal: number[][] = [];
     const horizontalFn = (current: number): number[][] => {
-      if (current === 3) {
+      if (current === 9) {
         return horizontal;
       }
       let start = current;
       horizontal.push([start, ++start, ++start]);
-      return horizontalFn(++current);
+      return horizontalFn(current + 3);
     };
     const vertical: number[][] = [];
     const verticalFn = (current: number): number[][] => {
