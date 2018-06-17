@@ -64,12 +64,13 @@ class Game extends React.Component<IProp, IState> {
         const status = winnerInformation ? `Winner ${winnerInformation.winner}` :
             `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
         const winningPattern = winnerInformation ? winnerInformation.winning : null;
+        const onBordCellClickFn = winningPattern ? () => { alert('Game is end...'); } : this.handleBoardCellClick;
         return (
             <div className='game'>
                 <div className='game-board'>
                     <Board
                         squares={current.squares}
-                        onClick={(i) => this.handleBoardCellClick(i)} // この形は OK らしい。
+                        onClick={(i) => onBordCellClickFn(i)} // この形は OK らしい。
                         winningPattern={winningPattern}
                     />
                 </div>
